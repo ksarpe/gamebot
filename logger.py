@@ -3,6 +3,8 @@ import logging
 
 def set_config():
     logging.basicConfig(
+        filemode='a',
+        filename='txt_files/logs.txt',
         level=logging.INFO,
         format='%(asctime)s.%(msecs)03d | %(message)s',
         datefmt='%M:%S'
