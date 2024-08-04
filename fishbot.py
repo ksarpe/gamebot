@@ -8,9 +8,9 @@ from PIL import Image
 import time
 import pyautogui
 import pydirectinput
+from inputs import press_key, release_key
 
 SECONDS_TO_START = 3
-
 
 class Fishbot:
     def __init__(self):
@@ -23,10 +23,10 @@ class Fishbot:
         self.win = self.get_win()  # get OBS window to read text from
 
     def get_win(self):
-        return pyautogui.getWindowsWithTitle("Podgląd w oknie (źródło) - game")[0]  # get OBS window name
+        return pyautogui.getWindowsWithTitle("XenoxMt2.com")[0]  # get OBS window name
 
     def initiate_tkwindow(self):
-        self.root.title('Vezuna Fishbot by haxper v1.0')
+        self.root.title('Xenox Fishbot by haxper v1.0')
         self.root.geometry("400x200+300+300")
         frm = tk.Frame(self.root, padx=10, pady=10)
         frm.grid()
@@ -50,7 +50,7 @@ class Fishbot:
     def is_fish(self, text):
         # if read text contains one of these chars, just return False because its not correct sentence, else TRUE
         for letter in text:
-             if letter == '[' or letter == ']' or letter == 'W' or letter == 'V':
+             if letter == '[' or letter == ']' or letter == 'W' or letter == 'V' or letter == '|':
                 return False
         return True
 
@@ -73,7 +73,10 @@ class Fishbot:
             # Fishing while bot is started
             if self.online:
                 start_time = time.time()  # start time of the initial cast
+                pydirectinput.press('1')
+                time.sleep(random.uniform(0.2, 0.4))
                 pydirectinput.press('space')  # Space for cast
+                self.Logger.log("Clicking 1 and space")
                 self.fishing = True  # since now fishing is started
                 time.sleep(5)  # Sleep 5 second because anyway fishing takes longer
 
@@ -85,19 +88,21 @@ class Fishbot:
                     img = Image.open("screen1.png")  # Open image that was taken
                     text = pytesseract.image_to_string(img)  # try to read text from it
 
-                    if self.is_fish(text):  # if text is recognized as correct go into condition
+                    if self.is_fish(text):  # if text is recognized as correct
+                        self.Logger.log(f"Text has been found: {text}")
                         clicks = self.give_spaces(text)  # Try to get how many times we need to click
                         if clicks is None:  # if we couldn't get integer value from text
-                            self.Logger.log("Couldn't get a clicks, empty text.")
+                            self.Logger.log("Couldn't get clicks, empty text.")
                             time.sleep(10)  # Wait for player to reset himself
                             self.fishing = False  # Set fishing to false and prevent loop going
                             continue  # break below code, continuing will start from the initial cast
-                        random.uniform(2, 3.5)  # if all is ok, wait some second before getting fish
-                        for i in range(0, clicks):  # CLick space correct amount of time with some delay to not be robot
-                            pydirectinput.press("space")
-                            random.uniform(0.1, 0.3)
+                        time.sleep(random.uniform(2, 3.5))  # if all is ok, wait some second before getting fish
+                        for i in range(0, clicks):
+                            pydirectinput.press('space')  # Space for cast
+                            self.Logger.log(f"{i+1} space for catching a fish")
+                            time.sleep(random.uniform(0.1, 0.2))
                         self.fishing = False  # self next iteration to false
-                        time.sleep(random.uniform(10, 12))  # add some sleep after getting a fish.
+                        time.sleep(random.uniform(7, 9))  # add some sleep after getting a fish.
 
                     if time.time() - start_time > 50:  # if we didn't get any good screen till start
                         break  # break loop and wish that player is ready to cast again
